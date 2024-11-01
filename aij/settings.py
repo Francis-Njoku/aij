@@ -81,7 +81,7 @@ MIDDLEWARE = [
 
 ]
 
-ROOT_URLCONF = 'dividends.urls'
+ROOT_URLCONF = 'aij.urls'
 
 TEMPLATES = [
     {
@@ -99,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dividends.wsgi.application'
+WSGI_APPLICATION = 'aij.wsgi.application'
 
 # CORS WHITELIST
 CORS_ORIGIN_WHITELIST = [
