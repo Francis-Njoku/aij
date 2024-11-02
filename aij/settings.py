@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'comment',
     'contact',
     'results',
+    'resume',
 ]
 
 SWAGGER_SETTINGS = {
