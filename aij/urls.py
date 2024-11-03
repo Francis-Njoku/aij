@@ -48,6 +48,7 @@ urlpatterns = [
     #path('investor/', include('investor.urls')),
     path('results/', include('results.urls')),
     path('cv/', include('resume.urls')),
+    path('jobsearch/', include('jobsearch.urls')),
     #path('comment/', include('comment.urls')),
     #path('contact/', include('contact.urls')),
     #path('investment/', include('investment.urls')),
