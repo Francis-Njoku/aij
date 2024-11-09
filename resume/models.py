@@ -27,7 +27,7 @@ class Resume(models.Model):
     
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    education = models.TextField(blank=True, null=True)  # E.g., "Bachelor's in Computer Science, XYZ University"
+    education = models.JSONField(blank=True, null=True)  # JSON format to store multiple education entries  # E.g., "Bachelor's in Computer Science, XYZ University"
     skills = models.TextField(blank=True, null=True)  # E.g., "Python, Django, Machine Learning"
     summary = models.TextField(blank=True, null=True)  # Brief summary from the CV
 

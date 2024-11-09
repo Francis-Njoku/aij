@@ -49,7 +49,7 @@ urlpatterns = [
     path('results/', include('results.urls')),
     path('cv/', include('resume.urls')),
     path('jobsearch/', include('jobsearch.urls')),
-    #path('comment/', include('comment.urls')),
+    path('payment/', include('payment.urls')),
     #path('contact/', include('contact.urls')),
     #path('investment/', include('investment.urls')),
     path('', schema_view.with_ui('swagger', cache_timeout=0),

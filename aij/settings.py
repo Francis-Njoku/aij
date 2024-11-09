@@ -15,6 +15,7 @@ import datetime
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
+import stripe
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -35,7 +36,7 @@ AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
 ALLOWED_HOSTS = ['yields-room.herokuapp.com', 'yield-room.netlify.app','yieldroom.africa','www.yieldroom.africa',
-                 'yieldroom.ng','www.yieldroom.ng','*.herokuapp.com', '*.netlify.app', 'localhost', '127.0.0.1', ]
+                 'yieldroom.ng','www.yieldroom.ng','*.herokuapp.com', '*.netlify.app', '*.crispvision.org', 'localhost', '127.0.0.1', ]
 
 
 INSTALLED_APPS = [
@@ -57,6 +58,9 @@ INSTALLED_APPS = [
     'contact',
     'results',
     'resume',
+    'generative',
+    'jobsearch',
+    'payment',
 ]
 
 SWAGGER_SETTINGS = {
@@ -153,6 +157,10 @@ GOOGLE_SEARCH_API_KEY = os.getenv("GOOGLE_SEARCH_API_KEY")
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+stripe.api_key = STRIPE_SECRET_KEY
+
 
 DATABASES = {
     "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),

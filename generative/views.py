@@ -1,12 +1,15 @@
 # interview/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework import status
 from .utils import generate_interview_questions, generate_cover_letter, extract_text_from_doc, extract_text_from_pdf
 from .models import InterviewQuestion, CoverLetter
 from .serializers import InterviewQuestionSerializer, CoverLetterSerializer
 from django.contrib.auth.models import User
-
+from resume.models import Resume
+import os
+from payment.permissions import HasActiveSubscription
 
 class UserInterviewQuestionsView(ListAPIView):
     serializer_class = InterviewQuestionSerializer
@@ -59,6 +62,8 @@ class InterviewQuestionView(APIView):
         return Response({"questions_and_answers": serializer.data}, status=status.HTTP_201_CREATED)
     
 class GenerateCoverLetterView(APIView):
+    permission_classes = [HasActiveSubscription]
+    
     def post(self, request):
         user_id = request.data.get('user_id')
         job_title = request.data.get('job_title')

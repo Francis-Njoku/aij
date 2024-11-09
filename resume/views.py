@@ -1,6 +1,8 @@
 from django.shortcuts import render
 import os
-from rest_framework import status
+import re
+import json
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.conf import settings
@@ -13,12 +15,11 @@ from django.shortcuts import get_object_or_404
 #from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from .models import UserProfile, JobExperience
-from .utils import extract_text_from_pdf, extract_text_from_docx, parse_experience_and_education
+from .utils import extract_text_from_pdf, parse_experience, parse_education, extract_skills_from_text, extract_text_from_docx, parse_experience_and_education
 from rest_framework import generics
 from .models import Resume, UserProfile
 
 
-# Create your views here.
 '''
 class ResumeUploadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -52,7 +53,7 @@ class ResumeUploadView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-'''
+
 class ResumeUploadView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
@@ -83,6 +84,49 @@ class ResumeUploadView(APIView):
                 for degree, institution, year in re.findall(r"(Bachelor's|Master's|PhD).*?in.*?([A-Za-z\s]+).*?(\d{4})", education_text, re.IGNORECASE)
             ]
             profile.skills = ", ".join(skills)
+            profile.save()s,
+                }
+            }, status=status.HTTP_201_CRE
+
+            return Response({
+                "uploaded_file": serializer.data,
+                "profile": {
+                    "summary": profile.summary,
+                    "education": profile.education,
+                    "skills": profile.skillATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
+
+class ResumeUploadView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ResumeSerializer(data=request.data)
+        if serializer.is_valid():
+            resume = Resume.objects.create(user=request.user, file=serializer.validated_data['file'])
+            file_path = resume.file.path
+
+            # Extract text from the file
+            if file_path.endswith(".pdf"):
+                text = extract_text_from_pdf(file_path)
+            elif file_path.endswith(".docx"):
+                text = extract_text_from_docx(file_path)
+            else:
+                return Response({"error": "Unsupported file format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Extract education, experience, and skills directly from the text
+            education = parse_education(text)
+            skills = extract_skills_from_text(text)
+            experience = parse_experience(text)
+            summary = text[:500]  # Take the first 500 characters as a summary
+
+            # Update or create user profile
+            profile, created = UserProfile.objects.get_or_create(user=request.user)
+            profile.summary = summary
+            profile.education = education  # Save as JSON
+            profile.skills = ", ".join(skills)  # Store skills as comma-separated string
             profile.save()
 
             return Response({
@@ -91,11 +135,13 @@ class ResumeUploadView(APIView):
                     "summary": profile.summary,
                     "education": profile.education,
                     "skills": profile.skills,
-                }
+                },
+                "experience": experience
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+'''
 class UserProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -113,7 +159,8 @@ class UserProfileView(generics.RetrieveAPIView):
             },
             "resumes": resume_serializer.data,
         })
-
+'''
+        
 class UserProfileView(RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
@@ -129,3 +176,46 @@ class JobExperienceListView(generics.ListAPIView):
 
     def get_queryset(self):
         return JobExperience.objects.filter(user=self.request.user)
+    
+
+# Create JobExperience
+class JobExperienceCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = JobExperienceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Update JobExperience
+class JobExperienceUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            job_experience = JobExperience.objects.get(pk=pk, user=request.user)
+        except JobExperience.DoesNotExist:
+            return Response({"error": "Job experience not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JobExperienceSerializer(job_experience, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Delete JobExperience
+class JobExperienceDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            job_experience = JobExperience.objects.get(pk=pk, user=request.user)
+        except JobExperience.DoesNotExist:
+            return Response({"error": "Job experience not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        job_experience.delete()
+        return Response({"message": "Job experience deleted successfully"}, status=status.HTTP_204_NO_CONTENT)    
