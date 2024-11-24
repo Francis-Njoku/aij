@@ -182,8 +182,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -254,10 +254,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'outlook.office365.com'
 #EMAIL_PORT = 2525
 #EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_HOST = 'mail.yieldroom.africa'
-EMAIL_PORT = 587
+EMAIL_HOST = 'premium225.web-hosting.com'
+#EMAIL_PORT = 465
 #EMAIL_HOST = 'premium161.web-hosting.com'
-#EMAIL_PORT = 587
+EMAIL_PORT = 587
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

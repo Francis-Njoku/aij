@@ -25,11 +25,11 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Yield Room API",
+        title="CRISP VISION JOBS",
         default_version='v1',
-        description="Test description",
+        description="Built by Chimauche Njoku",
         terms_of_service="https://www.ourapp.com/policies/terms/",
-        contact=openapi.Contact(email="info@yieldroom.africa"),
+        contact=openapi.Contact(email="info@crispvision.org"),
         license=openapi.License(name="Test License"),
     ),
     public=True,

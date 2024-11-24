@@ -34,4 +34,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
             representation['skills'] = representation['skills'].split(',')
         return representation   
     
+class JobSkillSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+    def validate(self, data):
+        if not data.get('name'):
+            raise serializers.ValidationError({"name": "This field is required."})
+        
+        # Split the comma-separated names
+        names = data['name'].split(', ')
+        if any(len(name.strip()) > 100 for name in names):
+            raise serializers.ValidationError(
+                {"name": "Each job skill must not exceed 100 characters."}
+            )
+        return data
+
+    def create(self, validated_data):
+        names = validated_data['name'].split(', ')
+        job_skills = []
+        for name in names:
+            job_skill, created = JobSkill.objects.get_or_create(name=name.strip())
+            job_skills.append(job_skill)
+        return job_skills
                

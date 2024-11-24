@@ -17,15 +17,15 @@ def identity_to(instance, filename):
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, username, firstname, lastname, address, referral_code, phone, email, password=None):
+    def create_user(self, username, firstname, lastname, email, password=None):
         '''if username is None:
             raise TypeError('Users should have a username')
             '''
         if email is None:
             raise TypeError('Users should have a Email')
 
-        user = self.model(username=username, firstname=firstname, address=address, lastname=lastname,
-                          phone=phone, referral_code=referral_code, email=self.normalize_email(email))
+        user = self.model(username=username, firstname=firstname, lastname=lastname,
+                           email=self.normalize_email(email))
         # user = self.model(username=username, #email=self.normalize_email(email))
         user.set_password(password)
         user.save()

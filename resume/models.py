@@ -17,6 +17,19 @@ class JobSkill(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+class Location(models.Model):
+    country = models.CharField(max_length=100, unique=True)
+    states = models.TextField(blank=True, null=True)
+    slug = models.SlugField(max_length=255, null=True, unique=True)
+
+    def __str__(self):
+        return self.country
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.slug = slugify(self.country)
+        super().save(*args, **kwargs)        
+
 class Resume(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     file = models.FileField(upload_to='resumes/')
